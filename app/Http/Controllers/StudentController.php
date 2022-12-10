@@ -14,7 +14,9 @@ class StudentController extends Controller
      */
     public function index()
     {
-        //
+        //all data from student
+        $students = Student::all();
+        return view('student.index', compact('students'));
     }
 
     /**
@@ -35,7 +37,25 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // store data student with auth
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'phone' => 'required',
+            'address' => 'required',
+        ]);
+
+        // if validate data failed
+
+        Student::create([
+            'name' => $request->name,
+            'email' => auth()->user()->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'user_id' => auth()->user()->id,
+        ]);
+
+        return redirect()->route('student.index')->with('success', 'Student created successfully.');
     }
 
     /**
@@ -46,7 +66,22 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        // show data student by ID
+        $student = Student::findOrFail($student->id);
+        return view('student.show', compact('student'));
+    }
+
+    /**
+     * Display the specified Auth resource.
+     *
+     * @param  \App\Models\Student  $student
+     * @return \Illuminate\Http\Response
+     */
+    public function showAuth(Student $student)
+    {
+        // show data student by ID
+        $student = Student::findOrFail(auth()->user()->id);
+        return view('student.showAuth', compact('student'));
     }
 
     /**
@@ -69,7 +104,24 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
-        //
+        // update data student by ID
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'phone' => 'required',
+            'address' => 'required',
+        ]);
+
+        $student = Student::findOrFail($student->id);
+        $student->update([
+            'name' => $request->name,
+            'email' => auth()->user()->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'user_id' => auth()->user()->id,
+        ]);
+
+        return redirect()->route('student.index')->with('success', 'Student updated successfully.');
     }
 
     /**
